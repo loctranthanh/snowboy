@@ -161,7 +161,7 @@ def fun9():
 func_exec = [fun0, fun1, fun2, fun3, fun4, fun5, fun6, fun7, fun8, fun9]
 # default parameters that can be changed with command line parameters
 
-SnowboyModel = '../Python3/resources/models/jarvis.umdl'   ### PROBABLY DIFFERENT on other systems ###
+SnowboyModel = '../Python3/resources/models/snowboy.umdl'   ### PROBABLY DIFFERENT on other systems ###
 lang = 'vi-VN'                         
 player = Player.Snowp
 sleepTime = 0.01
@@ -287,7 +287,7 @@ if args.detected != None:
 signal.signal(signal.SIGINT, signal_handler)
 
 # pixels = Pixels()
-detector = snowboydecoder.HotwordDetector(SnowboyModel, sensitivity=[0.8,0.80])
+detector = snowboydecoder.HotwordDetector(SnowboyModel, sensitivity=0.38)
 
 print('Snowboy model file: ', SnowboyModel)
 print('Spoken language: ', lang)
