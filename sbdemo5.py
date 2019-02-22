@@ -14,6 +14,13 @@ from enum import Enum
 import argparse
 from gtts import gTTS
 
+import requests
+from xml.etree import ElementTree
+
+# This code is required for Python 2.7
+try: input = raw_input
+except NameError: pass
+
 """
 This demo file, based on demo4.py from KITT.AI (https://snowboy.kitt.ai/),
 shows you how to use the new_message_callback to interact with
@@ -29,6 +36,59 @@ the pixels on the card to signify that the hotword has been detected and the
 rest of the voice command is to be dictated. More command line options have 
 been introduced to easily experiment with snowboydecoder options. 
 """
+
+subscription_key = '4252f4a4b5d447ffbd035d951e3f413f'
+
+class TextToSpeech(object):
+    def __init__(self, subscription_key, text):
+        self.subscription_key = subscription_key
+        self.tts = text
+#input("What would you like to convert to speech: ")
+        self.timestr = time.strftime("%Y%m%d-%H%M")
+        self.access_token = None
+
+    '''
+    The TTS endpoint requires an access token. This method exchanges your
+    subscription key for an access token that is valid for ten minutes.
+    '''
+    def get_token(self):
+        fetch_token_url = "https://westus.api.cognitive.microsoft.com/sts/v1.0/issueToken"
+        headers = {
+            'Ocp-Apim-Subscription-Key': self.subscription_key
+        }
+        response = requests.post(fetch_token_url, headers=headers)
+        self.access_token = str(response.text)
+
+    def save_audio(self):
+        base_url = 'https://westus.tts.speech.microsoft.com/'
+        path = 'cognitiveservices/v1'
+        constructed_url = base_url + path
+        headers = {
+            'Authorization': 'Bearer ' + self.access_token,
+            'Content-Type': 'application/ssml+xml',
+            'X-Microsoft-OutputFormat': 'riff-24khz-16bit-mono-pcm',
+            'User-Agent': 'YOUR_RESOURCE_NAME'
+        }
+        xml_body = ElementTree.Element('speak', version='1.0')
+        xml_body.set('{http://www.w3.org/XML/1998/namespace}lang', 'vi-vn')
+        voice = ElementTree.SubElement(xml_body, 'voice')
+        voice.set('{http://www.w3.org/XML/1998/namespace}lang', 'vi-VN')
+        voice.set('name', 'Microsoft Server Speech Text to Speech Voice (vi-VN, AN)')
+        voice.text = self.tts
+        body = ElementTree.tostring(xml_body)
+
+        response = requests.post(constructed_url, headers=headers, data=body)
+        '''
+        If a success response is returned, then the binary audio is written
+        to file in your working directory. It is prefaced by sample and
+        includes the date.
+        '''
+        if response.status_code == 200:
+            with open('out-tts.wav', 'wb') as audio:
+                audio.write(response.content)
+                print("\nStatus code: " + str(response.status_code) + "\nYour TTS is ready for playback.\n")
+        else:
+            print("\nStatus code: " + str(response.status_code) + "\nSomething went wrong. Check your subscription key and headers.\n")
 
 interrupted = False
 
@@ -101,7 +161,7 @@ def fun9():
 func_exec = [fun0, fun1, fun2, fun3, fun4, fun5, fun6, fun7, fun8, fun9]
 # default parameters that can be changed with command line parameters
 
-SnowboyModel = '../Python3/resources/models/snowboy.umdl'   ### PROBABLY DIFFERENT on other systems ###
+SnowboyModel = '../Python3/resources/models/jarvis.umdl'   ### PROBABLY DIFFERENT on other systems ###
 lang = 'vi-VN'                         
 player = Player.Snowp
 sleepTime = 0.01
@@ -154,10 +214,14 @@ def audioRecorderCallback(fname):
                     if counter <= accept_error[i]:
                         func_exec[i]()
                         ap.show()
-                        print(voice_cmd[i].encode('utf8'))
-                        tts = gTTS(respond_text[i], lang='vi')
-                        tts.save("out-tts.mp3")
-                        os.system('mpg123 out-tts.mp3') 
+                        app = TextToSpeech(subscription_key, respond_text[i])
+                        app.get_token()
+                        app.save_audio()
+                        os.system('aplay out-tts.wav')
+                        # print(voice_cmd[i].encode('utf8'))
+                        # tts = gTTS(respond_text[i], lang='vi')
+                        # tts.save("out-tts.mp3")
+                        # os.system('mpg123 out-tts.mp3') 
     
     os.remove(fname)
     print('\nListening... Press Ctrl+C to exit')
@@ -223,7 +287,7 @@ if args.detected != None:
 signal.signal(signal.SIGINT, signal_handler)
 
 # pixels = Pixels()
-detector = snowboydecoder.HotwordDetector(SnowboyModel, sensitivity=0.38)
+detector = snowboydecoder.HotwordDetector(SnowboyModel, sensitivity=[0.8,0.80])
 
 print('Snowboy model file: ', SnowboyModel)
 print('Spoken language: ', lang)
