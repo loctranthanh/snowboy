@@ -14,6 +14,8 @@ from enum import Enum
 import argparse
 from gtts import gTTS
 import ss_request
+import device
+import action
 
 ss = ss_request.ss_request('0926825012', '123456789')
 
@@ -85,32 +87,30 @@ class Player(Enum):
     Mocp = 3
     NoPlay = 4
 
-n_command = 8
+list_device = []
+list_device.append(device.device(1, [u'đèn phòng khách'], '11E9367B8CC09C6EAFAB0050560121C8', 1, action.action.ON_OFF))
+list_device.append(device.device(1, [u'đèn nhà bếp', u'đèn phòng bếp', u'đèn nhà ăn'], '11E9367B8CC09C6EAFAB0050560121C8', 2, action.action.ON_OFF))
+list_device.append(device.device(1, [u'đèn phòng ngủ'], '11E9367B8CC09C6EAFAB0050560121C8', 3, action.action.ON_OFF))
+list_device.append(device.device(3, [u'tất cả đèn', u'tắt cả đèn'], ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], action.action.ON_OFF))
 
-class voice_command:
-    def __init__(self, cmd, response, accept_error, device_id, num_pad, status):
-        self.cmd = cmd
-        self.response = response
-        self.accept_error = accept_error
-        self.device_id = device_id
-        self.num_pad = num_pad
-        self.status = status
+# class voice_command:
+#     def __init__(self, cmd, response, accept_error, device_id, num_pad, status):
+#         self.cmd = cmd
+#         self.response = response
+#         self.accept_error = accept_error
+#         self.device_id = device_id
+#         self.num_pad = num_pad
+#         self.status = status
 
-list_command = []
-list_command.append(voice_command(u'bật đèn nhà bếp', u'đèn nhà bếp đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 1, 1))
-list_command.append(voice_command(u'tắt đèn nhà bếp', u'đèn nhà bếp đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 1, 0))
-list_command.append(voice_command(u'bật đèn phòng khách', u'đèn phòng khách đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 2, 1))
-list_command.append(voice_command(u'tắt đèn phòng khách', u'đèn phòng khách đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 2, 0))
-list_command.append(voice_command(u'bật đèn phòng ngủ', u'đèn phòng ngủ đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 3, 1))
-list_command.append(voice_command(u'tắt đèn phòng ngủ', u'đèn phòng ngủ đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 3, 0))
-list_command.append(voice_command(u'bật tất cả đèn', u'tất cả đèn đã bật', 1, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [1, 1, 1]))
-list_command.append(voice_command(u'tắt tất cả đèn', u'tất cả đèn đã tắt', 1, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [0, 0, 0]))
-
-# ap = apa102.APA102(3)
-# ap.set_pixel(0, 0, 0, 0)
-# ap.set_pixel(1, 0, 0, 0)
-# ap.set_pixel(2, 0, 0, 0)
-# ap.show()
+# list_command = []
+# list_command.append(voice_command(u'bật đèn nhà bếp', u'đèn nhà bếp đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 1, 1))
+# list_command.append(voice_command(u'tắt đèn nhà bếp', u'đèn nhà bếp đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 1, 0))
+# list_command.append(voice_command(u'bật đèn phòng khách', u'đèn phòng khách đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 2, 1))
+# list_command.append(voice_command(u'tắt đèn phòng khách', u'đèn phòng khách đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 2, 0))
+# list_command.append(voice_command(u'bật đèn phòng ngủ', u'đèn phòng ngủ đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 3, 1))
+# list_command.append(voice_command(u'tắt đèn phòng ngủ', u'đèn phòng ngủ đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 3, 0))
+# list_command.append(voice_command(u'bật tất cả đèn', u'tất cả đèn đã bật', 1, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [1, 1, 1]))
+# list_command.append(voice_command(u'tắt tất cả đèn', u'tất cả đèn đã tắt', 1, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [0, 0, 0]))
 
 SnowboyModel = '../Python3/resources/models/snowboy.umdl'   ### PROBABLY DIFFERENT on other systems ###
 lang = 'vi-VN'                         
@@ -119,6 +119,14 @@ sleepTime = 0.01
 silentCountThreshold = 5
 recordingTimeout = 100
 detectedSignal = 3
+
+def voice_response(text_response):
+    print('voice response: ' + text_response.encode('utf8'))
+    app = TextToSpeech(subscription_key, text_response)
+    app.get_token()
+    app.save_audio()
+    pixels.speak()
+    os.system('aplay out-tts.wav')
 
 def audioRecorderCallback(fname):
     pixels.think()
@@ -153,28 +161,49 @@ def audioRecorderCallback(fname):
         #    print('snowboydecoder.play_audio_file()')
         #    snowboydecoder.play_audio_file(fname)
             if check_error != True:
-                for i in range(n_command):
-                    if len(list_command[i].cmd) != len(result.lower()):
-                        continue
-                    counter = 0
-                    result = result.lower()
-                    for c in range(len(list_command[i].cmd)):
-                        if list_command[i].cmd[c] != result[c]:
-                            counter += 1
-                    print('counter: ' + str(counter))   
-                    if counter <= list_command[i].accept_error:
-                        # func_exec[i]()
-                        # ap.show()
-                        if type(list_command[i].device_id) != str and len(list_command[i].device_id) > 1:
-                            for c in range(len(list_command[i].device_id)):
-                                ss.switcher_control(list_command[i].device_id[c], list_command[i].num_pad[c], list_command[i].status[c])
-                        else:
-                            ss.switcher_control(list_command[i].device_id, list_command[i].num_pad, list_command[i].status)
-                        app = TextToSpeech(subscription_key, list_command[i].response)
-                        app.get_token()
-                        app.save_audio()
-                        pixels.speak()
-                        os.system('aplay out-tts.wav')
+                result = result.lower()
+                for dev in list_device:
+                    for dev_name in dev.name:
+                        if dev_name in result:
+                            if dev.action_type == action.action.ON_OFF:
+                                if result.find(action.on_off.on) != -1:
+                                    if dev.n_element == 1:
+                                        ss.switcher_control(dev.id, dev.num_pad, 1)
+                                    else:
+                                        for e_index in range(len(dev.id)):
+                                            ss.switcher_control(dev.id[e_index], dev.num_pad[e_index], 1)
+                                    voice_response(dev_name + u' đã ' + action.on_off.on)
+                                elif result.find(action.on_off.off) != -1:
+                                    if dev.n_element == 1:
+                                        ss.switcher_control(dev.id, dev.num_pad, 0)
+                                    else:
+                                        for e_index in range(len(dev.id)):
+                                            ss.switcher_control(dev.id[e_index], dev.num_pad[e_index], 0)
+                                    voice_response(dev_name + u' đã ' + action.on_off.off)
+
+
+                # for i in range(n_command):
+                #     if len(list_command[i].cmd) != len(result.lower()):
+                #         continue
+                #     counter = 0
+                #     result = result.lower()
+                #     for c in range(len(list_command[i].cmd)):
+                #         if list_command[i].cmd[c] != result[c]:
+                #             counter += 1
+                #     print('counter: ' + str(counter))   
+                #     if counter <= list_command[i].accept_error:
+                #         # func_exec[i]()
+                #         # ap.show()
+                #         if type(list_command[i].device_id) != str and len(list_command[i].device_id) > 1:
+                #             for c in range(len(list_command[i].device_id)):
+                #                 ss.switcher_control(list_command[i].device_id[c], list_command[i].num_pad[c], list_command[i].status[c])
+                #         else:
+                #             ss.switcher_control(list_command[i].device_id, list_command[i].num_pad, list_command[i].status)
+                #         app = TextToSpeech(subscription_key, list_command[i].response)
+                #         app.get_token()
+                #         app.save_audio()
+                #         pixels.speak()
+                #         os.system('aplay out-tts.wav')
                         # print(voice_cmd[i].encode('utf8'))
                         # tts = gTTS(respond_text[i], lang='vi')
                         # tts.save("out-tts.mp3")
