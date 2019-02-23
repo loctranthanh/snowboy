@@ -13,6 +13,9 @@ import apa102
 from enum import Enum
 import argparse
 from gtts import gTTS
+import ss_request
+
+ss = ss_request.ss_request('0926825012', '123456789')
 
 import requests
 from xml.etree import ElementTree
@@ -20,22 +23,6 @@ from xml.etree import ElementTree
 # This code is required for Python 2.7
 try: input = raw_input
 except NameError: pass
-
-"""
-This demo file, based on demo4.py from KITT.AI (https://snowboy.kitt.ai/),
-shows you how to use the new_message_callback to interact with
-the recorded audio after a keyword is spoken. It uses the speech recognition
-library in order to convert the recorded audio into text.
-
-Information on installing the speech recognition library can be found at:
-https://pypi.python.org/pypi/SpeechRecognition/
-
-The original demo4.py has been modified to support the pixels on the 
-ReSpeaker 2 Mics HAT. It uses the pixels.py and apa102.py libraries to flash 
-the pixels on the card to signify that the hotword has been detected and the 
-rest of the voice command is to be dictated. More command line options have 
-been introduced to easily experiment with snowboydecoder options. 
-"""
 
 subscription_key = '4252f4a4b5d447ffbd035d951e3f413f'
 
@@ -98,25 +85,45 @@ class Player(Enum):
     Mocp = 3
     NoPlay = 4
 
-n_command = 10
+n_command = 8
 
-voice_cmd = [u'bật đèn nhà bếp', u'tắt đèn nhà bếp', 
-            u'bật đèn phòng khách', u'tắt đèn phòng khách',
-            u'bật đèn phòng ngủ', u'tắt đèn phòng ngủ',
-            u'bật tất cả đèn', u'tắt tất cả đèn',
-            u'chuyển đèn nhà bếp sang trắng', u'chuyển đèn nhà bếp sang hồng']
+class voice_command:
+    def __init__(self, cmd, response, accept_error, device_id, num_pad, status):
+        self.cmd = cmd
+        self.response = response
+        self.accept_error = accept_error
+        self.device_id = device_id
+        self.num_pad = num_pad
+        self.status = status
 
-respond_text = [u'đèn nhà bếp đã bật', u'đèn nhà bếp đã tắt',
-                u'đèn phòng khách đã bật', u'đèn phòng khách đã tắt',
-                u'đèn phòng ngủ đã bật', u'đèn phòng ngủ đã tắt',
-                u'tất cả đèn đã bật', u'tất cả đèn đã tắt',
-                u'đèn nhà bếp đã chuyển sang trắng', u'đèn nhà bếp đã chuyển sang hồng']
+list_command = []
+list_command.append(voice_command(u'bật đèn nhà bếp', u'đèn nhà bếp đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 1, 1))
+list_command.append(voice_command(u'tắt đèn nhà bếp', u'đèn nhà bếp đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 1, 0))
+list_command.append(voice_command(u'bật đèn phòng khách', u'đèn phòng khách đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 2, 1))
+list_command.append(voice_command(u'tắt đèn phòng khách', u'đèn phòng khách đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 2, 0))
+list_command.append(voice_command(u'bật đèn phòng ngủ', u'đèn phòng ngủ đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 3, 1))
+list_command.append(voice_command(u'tắt đèn phòng ngủ', u'đèn phòng ngủ đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 3, 0))
+list_command.append(voice_command(u'bật tất cả đèn', u'tất cả đèn đã bật', 2, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [1, 1, 1]))
+list_command.append(voice_command(u'tắt tất cả đèn', u'tất cả đèn đã tắt', 2, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [0, 0, 0]))
 
-accept_error = [0, 0,
-                0, 0,
-                0, 0,
-                1, 1,
-                4, 4]
+# voice_cmd = [u'bật đèn nhà bếp', u'tắt đèn nhà bếp', 
+#             u'bật đèn phòng khách', u'tắt đèn phòng khách',
+#             u'bật đèn trần phòng khách', u'tắt đèn trần phòng khách',
+#             u'bật tất cả đèn', u'tắt tất cả đèn',
+#             u'chuyển đèn nhà bếp sang trắng', u'chuyển đèn nhà bếp sang hồng',
+#             u'bật đèn trần phòng khách', u'tắt đèn trần phòng khách']
+
+# respond_text = [u'đèn nhà bếp đã bật', u'đèn nhà bếp đã tắt',
+#                 u'đèn phòng khách đã bật', u'đèn phòng khách đã tắt',
+#                 u'đèn trần phòng khách đã bật', u'đèn trần phòng khách đã tắt',
+#                 u'tất cả đèn đã bật', u'tất cả đèn đã tắt',
+#                 u'đèn nhà bếp đã chuyển sang trắng', u'đèn nhà bếp đã chuyển sang hồng']
+
+# accept_error = [0, 0,
+#                 0, 0,
+#                 0, 0,
+#                 1, 1,
+#                 4, 4]
 
 ap = apa102.APA102(3)
 ap.set_pixel(0, 0, 0, 0)
@@ -124,41 +131,41 @@ ap.set_pixel(1, 0, 0, 0)
 ap.set_pixel(2, 0, 0, 0)
 ap.show()
 
-def fun0():
-    ap.set_pixel(0, 255, 0, 0, 50)
+# def fun0():
+#     ap.set_pixel(0, 255, 0, 0, 50)
 
-def fun1():
-    ap.set_pixel(0, 0, 0, 0)
+# def fun1():
+#     ap.set_pixel(0, 0, 0, 0)
 
-def fun2():
-    ap.set_pixel(1, 0, 255, 0, 50)
+# def fun2():
+#     ap.set_pixel(1, 0, 255, 0, 50)
 
-def fun3():
-    ap.set_pixel(1, 0, 0, 0)
+# def fun3():
+#     ap.set_pixel(1, 0, 0, 0)
 
-def fun4():
-    ap.set_pixel(2, 0, 0, 255, 50)
+# def fun4():
+#     ap.set_pixel(2, 0, 0, 255, 50)
 
-def fun5():
-    ap.set_pixel(2, 0, 0, 0)
+# def fun5():
+#     ap.set_pixel(2, 0, 0, 0)
 
-def fun6():
-    ap.set_pixel(0, 255, 0, 0, 50)
-    ap.set_pixel(1, 0, 255, 0, 50)
-    ap.set_pixel(2, 0, 0, 255, 50)
+# def fun6():
+#     ap.set_pixel(0, 255, 0, 0, 50)
+#     ap.set_pixel(1, 0, 255, 0, 50)
+#     ap.set_pixel(2, 0, 0, 255, 50)
 
-def fun7():
-    ap.set_pixel(0, 0, 0, 0)
-    ap.set_pixel(1, 0, 0, 0)
-    ap.set_pixel(2, 0, 0, 0)
+# def fun7():
+#     ap.set_pixel(0, 0, 0, 0)
+#     ap.set_pixel(1, 0, 0, 0)
+#     ap.set_pixel(2, 0, 0, 0)
 
-def fun8():
-    ap.set_pixel(0, 255, 255, 255, 50)
+# def fun8():
+#     ap.set_pixel(0, 255, 255, 255, 50)
 
-def fun9():
-    ap.set_pixel(0, 255, 0, 255, 50)
+# def fun9():
+#     ap.set_pixel(0, 255, 0, 255, 50)
 
-func_exec = [fun0, fun1, fun2, fun3, fun4, fun5, fun6, fun7, fun8, fun9]
+# func_exec = [fun0, fun1, fun2, fun3, fun4, fun5, fun6, fun7, fun8, fun9]
 # default parameters that can be changed with command line parameters
 
 SnowboyModel = '../Python3/resources/models/snowboy.umdl'   ### PROBABLY DIFFERENT on other systems ###
@@ -202,19 +209,23 @@ def audioRecorderCallback(fname):
         #    snowboydecoder.play_audio_file(fname)
             if check_error != True:
                 for i in range(n_command):
-                    if len(voice_cmd[i]) != len(result.lower()):
+                    if len(list_command[i].cmd) != len(result.lower()):
                         continue
                     counter = 0
                     result = result.lower()
-                    for c in range(len(voice_cmd[i])):
-                        if voice_cmd[i][c] != result[c]:
+                    for c in range(len(list_command[i].cmd)):
+                        if list_command[i].cmd[c] != result[c]:
                             counter += 1
-                    print('counter: ')
-                    print(counter)
-                    if counter <= accept_error[i]:
-                        func_exec[i]()
-                        ap.show()
-                        app = TextToSpeech(subscription_key, respond_text[i])
+                    print('counter: ' + str(counter))   
+                    if counter <= list_command[i].accept_error:
+                        # func_exec[i]()
+                        # ap.show()
+                        if type(list_command[i].device_id) != str and len(list_command[i].device_id) > 1:
+                            for c in range(len(list_command[i].device_id)):
+                                ss.switcher_control(list_command[i].device_id[c], list_command[i].num_pad[c], list_command[i].status[c])
+                        else:
+                            ss.switcher_control(list_command[i].device_id, list_command[i].num_pad, list_command[i].status)
+                        app = TextToSpeech(subscription_key, list_command[i].response)
                         app.get_token()
                         app.save_audio()
                         os.system('aplay out-tts.wav')
