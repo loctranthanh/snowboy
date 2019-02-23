@@ -8,8 +8,8 @@ import speech_recognition as sr
 import os
 import time
 import subprocess
-# from pixels import Pixels
-import apa102
+from pixels import Pixels
+# import apa102
 from enum import Enum
 import argparse
 from gtts import gTTS
@@ -103,70 +103,14 @@ list_command.append(voice_command(u'bật đèn phòng khách', u'đèn phòng k
 list_command.append(voice_command(u'tắt đèn phòng khách', u'đèn phòng khách đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 2, 0))
 list_command.append(voice_command(u'bật đèn phòng ngủ', u'đèn phòng ngủ đã bật', 0, '11E9367B8CC09C6EAFAB0050560121C8', 3, 1))
 list_command.append(voice_command(u'tắt đèn phòng ngủ', u'đèn phòng ngủ đã tắt', 0, '11E9367B8CC09C6EAFAB0050560121C8', 3, 0))
-list_command.append(voice_command(u'bật tất cả đèn', u'tất cả đèn đã bật', 2, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [1, 1, 1]))
-list_command.append(voice_command(u'tắt tất cả đèn', u'tất cả đèn đã tắt', 2, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [0, 0, 0]))
+list_command.append(voice_command(u'bật tất cả đèn', u'tất cả đèn đã bật', 1, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [1, 1, 1]))
+list_command.append(voice_command(u'tắt tất cả đèn', u'tất cả đèn đã tắt', 1, ['11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8', '11E9367B8CC09C6EAFAB0050560121C8'], [1, 2, 3], [0, 0, 0]))
 
-# voice_cmd = [u'bật đèn nhà bếp', u'tắt đèn nhà bếp', 
-#             u'bật đèn phòng khách', u'tắt đèn phòng khách',
-#             u'bật đèn trần phòng khách', u'tắt đèn trần phòng khách',
-#             u'bật tất cả đèn', u'tắt tất cả đèn',
-#             u'chuyển đèn nhà bếp sang trắng', u'chuyển đèn nhà bếp sang hồng',
-#             u'bật đèn trần phòng khách', u'tắt đèn trần phòng khách']
-
-# respond_text = [u'đèn nhà bếp đã bật', u'đèn nhà bếp đã tắt',
-#                 u'đèn phòng khách đã bật', u'đèn phòng khách đã tắt',
-#                 u'đèn trần phòng khách đã bật', u'đèn trần phòng khách đã tắt',
-#                 u'tất cả đèn đã bật', u'tất cả đèn đã tắt',
-#                 u'đèn nhà bếp đã chuyển sang trắng', u'đèn nhà bếp đã chuyển sang hồng']
-
-# accept_error = [0, 0,
-#                 0, 0,
-#                 0, 0,
-#                 1, 1,
-#                 4, 4]
-
-ap = apa102.APA102(3)
-ap.set_pixel(0, 0, 0, 0)
-ap.set_pixel(1, 0, 0, 0)
-ap.set_pixel(2, 0, 0, 0)
-ap.show()
-
-# def fun0():
-#     ap.set_pixel(0, 255, 0, 0, 50)
-
-# def fun1():
-#     ap.set_pixel(0, 0, 0, 0)
-
-# def fun2():
-#     ap.set_pixel(1, 0, 255, 0, 50)
-
-# def fun3():
-#     ap.set_pixel(1, 0, 0, 0)
-
-# def fun4():
-#     ap.set_pixel(2, 0, 0, 255, 50)
-
-# def fun5():
-#     ap.set_pixel(2, 0, 0, 0)
-
-# def fun6():
-#     ap.set_pixel(0, 255, 0, 0, 50)
-#     ap.set_pixel(1, 0, 255, 0, 50)
-#     ap.set_pixel(2, 0, 0, 255, 50)
-
-# def fun7():
-#     ap.set_pixel(0, 0, 0, 0)
-#     ap.set_pixel(1, 0, 0, 0)
-#     ap.set_pixel(2, 0, 0, 0)
-
-# def fun8():
-#     ap.set_pixel(0, 255, 255, 255, 50)
-
-# def fun9():
-#     ap.set_pixel(0, 255, 0, 255, 50)
-
-# func_exec = [fun0, fun1, fun2, fun3, fun4, fun5, fun6, fun7, fun8, fun9]
-# default parameters that can be changed with command line parameters
+# ap = apa102.APA102(3)
+# ap.set_pixel(0, 0, 0, 0)
+# ap.set_pixel(1, 0, 0, 0)
+# ap.set_pixel(2, 0, 0, 0)
+# ap.show()
 
 SnowboyModel = '../Python3/resources/models/snowboy.umdl'   ### PROBABLY DIFFERENT on other systems ###
 lang = 'vi-VN'                         
@@ -177,6 +121,7 @@ recordingTimeout = 100
 detectedSignal = 3
 
 def audioRecorderCallback(fname):
+    pixels.think()
     print("converting audio to text")
     r = sr.Recognizer()
     with sr.AudioFile(fname) as source:
@@ -228,6 +173,7 @@ def audioRecorderCallback(fname):
                         app = TextToSpeech(subscription_key, list_command[i].response)
                         app.get_token()
                         app.save_audio()
+                        pixels.speak()
                         os.system('aplay out-tts.wav')
                         # print(voice_cmd[i].encode('utf8'))
                         # tts = gTTS(respond_text[i], lang='vi')
@@ -235,14 +181,16 @@ def audioRecorderCallback(fname):
                         # os.system('mpg123 out-tts.mp3') 
     
     os.remove(fname)
+    os.system('aplay resources/dong.wav')
+    pixels.off()
     print('\nListening... Press Ctrl+C to exit')
 
 
 def detectedCallback():
   if detectedSignal > 2:
       snowboydecoder.play_audio_file()
-#   if detectedSignal > 1:
-    #   pixels.listen()
+  if detectedSignal > 1:
+      pixels.listen()
   if detectedSignal > 0:    
       print('yes...')
 
@@ -297,7 +245,7 @@ if args.detected != None:
 # capture SIGINT signal, e.g., Ctrl+C
 signal.signal(signal.SIGINT, signal_handler)
 
-# pixels = Pixels()
+pixels = Pixels()
 detector = snowboydecoder.HotwordDetector(SnowboyModel, sensitivity=0.38)
 
 print('Snowboy model file: ', SnowboyModel)
@@ -321,8 +269,8 @@ print('recording_timeout:', recordingTimeout)
 signal = ''
 if detectedSignal > 2:
     signal = '+ play ding'
-# if detectedSignal > 1:
-    # signal = '+ pixels ' + signal
+if detectedSignal > 1:
+    signal = '+ pixels ' + signal
 if detectedSignal > 0:
     signal = 'print "yes" ' + signal
 if detectedSignal < 1:
@@ -340,7 +288,7 @@ detector.start(detected_callback=detectedCallback,
                recording_timeout=recordingTimeout)
 
 detector.terminate()
-# pixels.off()
+pixels.off()
 time.sleep(1)
 
 
